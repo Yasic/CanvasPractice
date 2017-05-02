@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Linear Motion</title>
+    <style type="text/css">
+        body{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function Ball(radius) {
+        this.radius = radius;
+        this.speed = 5;
+        this.x = 0;
+        this.y = 0;
+        this.scaleX = 1;
+        this.scaleY = 1;
+    }
+
+    Ball.prototype.draw = function (context) {
+        context.save();
+        context.fillStyle = '#3399ff';
+        context.beginPath();
+        context.arc(this.x, this.y, this.radius * this.scaleX, 0, Math.PI * 2);
+        context.fill();
+        context.closePath();
+        context.restore();
+    };
+
+    var ball = new Ball(10);
+    ball.y = canvas.height / 2;
+
+    var angle = 0;
+    var centerScale = 1;
+    (function frame() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        ball.draw(context);
+        ball.x += ball.speed;
+        if (ball.x > canvas.width + ball.radius){
+            ball.x = -ball.radius;
+        }
+        ball.y = canvas.height/2+Math.sin(angle) * 15;
+        ball.scaleX = ball.scaleY = centerScale + Math.sin(angle) * 0.5;
+        angle += 0.1;
+        window.requestAnimationFrame(frame, canvas);
+    })();
+</script>
+</html>

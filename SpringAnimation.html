@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Animation</title>
+    <style type="text/css">
+        body{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="js/ball.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/arrow.js"></script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.background = 'black';
+    var context = canvas.getContext('2d');
+
+    var ball = new Ball(20, '#3399ff');
+    ball.x = 20;
+    ball.y = canvas.height/2;
+    var targetX = canvas.width/2;
+    var spring = 0.003;
+    var friction = 1;
+    (function frame() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        var dx = targetX - ball.x;
+        var ax = dx * spring;
+        ball.vx += ax;
+        ball.vx *= friction;
+        ball.x += ball.vx;
+        ball.draw(context);
+        window.requestAnimationFrame(frame, canvas);
+    })();
+</script>
+</html>

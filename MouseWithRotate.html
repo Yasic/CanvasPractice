@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mouse With Rotate</title>
+    <style type="text/css">
+        body{
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script src="js/arrow.js?n=1"></script>
+    <script src="js/utils.js?n=2"></script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    window.onload = function () {
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var centerX = canvas.width/2;
+        var centerY = canvas.height/2;
+        var mouse = utils.captureMouse(canvas);
+        var arrow = new Arrow();
+        arrow.x = centerX;
+        arrow.y = centerY;
+
+        (function frame() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            var dx = mouse.x - arrow.x;
+            var dy = mouse.y - arrow.y;
+            var distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+            arrow.x += dx/distance;
+            arrow.y += dy/distance;
+            arrow.rotation = Math.atan2(dy, dx);
+            arrow.draw(context);
+            window.requestAnimationFrame(frame, canvas);
+        })()
+    }
+</script>
+</html>

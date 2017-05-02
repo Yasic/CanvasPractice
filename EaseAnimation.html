@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ease Animation</title>
+    <style type="text/css">
+        body{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="js/ball.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/arrow.js"></script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.background = 'black';
+    var context = canvas.getContext('2d');
+
+    var ball = new Ball(50, '#3399ff');
+    ball.x = 10;
+    ball.y = canvas.height/2;
+    var easing = 0.05;
+    var targetX = canvas.width/2;
+    var mouse = utils.captureMouse(canvas);
+
+    var littleBall = new Ball(20, '#074986');
+    littleBall.x = 10;
+    littleBall.y = canvas.width/2;
+
+    var arrow = new Arrow();
+    arrow.x = canvas.width / 2;
+    arrow.y = canvas.height / 2;
+    var sourceRotation = Math.PI / 2;
+    var targetRotation = Math.PI * 3/2;
+    arrow.rotation = sourceRotation;
+
+    (function frame() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        var dx = mouse.x - ball.x;
+        var dy = mouse.y - ball.y;
+        if (Math.abs(dx) < 1){
+            ball.x = mouse.x;
+        }else {
+            ball.vx = dx * easing;
+            ball.x += ball.vx;
+        }
+        if (Math.abs(dy) < 1){
+            ball.y = mouse.y;
+        }else {
+            ball.vy = dy * easing;
+            ball.y += ball.vy;
+        }
+        ball.draw(context);
+
+        littleBall.vx = (ball.x - littleBall.x) * easing;
+        littleBall.vy = (ball.y - littleBall.y) * easing;
+        littleBall.x += littleBall.vx;
+        littleBall.y += littleBall.vy;
+        littleBall.draw(context);
+
+        arrow.draw(context);
+        arrow.rotation += (targetRotation - arrow.rotation) * easing;
+        window.requestAnimationFrame(frame, canvas);
+    })();
+</script>
+</html>

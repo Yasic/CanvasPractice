@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Balls Running</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="js/ball.js"></script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.background = 'black'
+
+    var balls = [];
+    for (var i = 0; i < 100; i++){
+        balls[i] = new Ball(10, '#' + (function (h) {
+                    return new Array(7 - h.length).join("0") + h
+                })((Math.random() * 0x1000000 << 0).toString(16)));
+        balls[i].x = Math.random() * canvas.width;
+        balls[i].y = Math.random() * canvas.height;
+        balls[i].vx = Math.random() * 10 - 5;
+        balls[i].vy = Math.random() * 10 - 5;
+    }
+
+    var bounce = -1;
+    function checkBoundary(ball) {
+        if (ball.x - ball.radius > canvas.width){
+            ball.x = canvas.width - ball.radius;
+            ball.vx *= bounce;
+        }
+        if (ball.x + ball.radius < 0){
+            ball.x = ball.radius;
+            ball.vx *= bounce;
+
+        }
+        if (ball.y - ball.radius > canvas.height){
+            ball.y = canvas.height - ball.radius;
+            ball.vy *= bounce;
+
+        }
+        if (ball.y + ball.radius < 0){
+            ball.y = ball.radius;
+            ball.vy *= bounce;
+        }
+    }
+
+    (function frame() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < balls.length; i++){
+            balls[i].x += balls[i].vx;
+            balls[i].y += balls[i].vy;
+            balls[i].draw(context);
+            checkBoundary(balls[i]);
+        }
+        window.requestAnimationFrame(frame, canvas);
+    })();
+
+
+</script>
+</html>

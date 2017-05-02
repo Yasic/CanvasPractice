@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Momentum and Energy</title>
+    <style type="text/css">
+        body{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="js/ball.js"></script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.background = 'black';
+    var context = canvas.getContext('2d');
+
+    var ball1 = new Ball(20, '#9933ff');
+    ball1.x = 40;
+    ball1.y = canvas.height/2;
+    ball1.vx = 3;
+    ball1.quality = 10;
+
+    var ball2 = new Ball(20, '#ff9933');
+    ball2.x = canvas.width - 40;
+    ball2.y = canvas.height/2;
+    ball2.vx = -10;
+    ball2.quality = 1;
+
+    var balls = [];
+    balls[0] = ball1;
+    balls[1] = ball2;
+
+    var bounce = -0.8;
+    function checkBoundary(ball) {
+        if (ball.x - ball.radius > canvas.width){
+            ball.x = canvas.width;
+            ball.vx *= bounce;
+        }
+        if (ball.x + ball.radius < 0){
+            ball.x = -ball.radius;
+            ball.vx *= bounce;
+
+        }
+        if (ball.y - ball.radius > canvas.height){
+            ball.y = canvas.height;
+            ball.vy *= bounce;
+
+        }
+        if (ball.y + ball.radius < 0){
+            ball.y = -ball.radius;
+            ball.vy *= bounce;
+        }
+    }
+
+    var spring = 0.1;
+    var friction = 1;
+    function checkImpact(fBall, eBall) {
+        var dx = fBall.x - eBall.x;
+        var dy = fBall.y - eBall.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var minDist = fBall.radius + eBall.radius;
+        if (dist <= minDist){
+            fBall.vx = ((fBall.quality - eBall.quality) * fBall.vx + 2 * eBall.quality * eBall.vx)/(fBall.quality + eBall.quality);
+        }
+    }
+
+    (function frame() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < balls.length; i++){
+            for (var j = 0; j < balls.length; j++){
+                if (i != j){
+                    checkImpact(balls[i], balls[j]);
+                }
+            }
+            console.log(i + " " + balls[i].vx);
+            balls[i].x += balls[i].vx;
+            balls[i].y += balls[i].vy;
+            balls[i].vx *= friction;
+            balls[i].vy *= friction;
+            checkBoundary(balls[i]);
+            balls[i].draw(context);
+        }
+        window.requestAnimationFrame(frame, canvas);
+    })();
+</script>
+</html>

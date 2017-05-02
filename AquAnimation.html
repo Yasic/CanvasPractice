@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Aqu Animation</title>
+    <style type="text/css">
+        body{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function Aqu(color, num) {
+        this.startPoint = [];
+        this.endPointX = [];
+        this.endPointY = [];
+        this.amp = [];
+        this.beta = 0;
+        this.color = (color == undefined)?'#3399ff' : color;
+        this.num = (num == undefined)?80:num;
+    }
+
+    Aqu.prototype.init = function () {
+        for (var i = 0; i < this.num; i++){
+            this.startPoint[i] = Math.random() * 20 + i * 15 + 180;
+            this.endPointX[i] = this.startPoint[i];
+            this.endPointY[i] = canvas.height/2 - Math.random() * 50;
+            this.amp[i] = Math.random() * 10 + 120;
+        }
+    };
+
+    Aqu.prototype.draw = function (ctx) {
+        ctx.save();
+        ctx.lineWidth = 14;
+        ctx.lineCap = 'round';
+        ctx.globalAlpha = 0.8;
+        ctx.strokeStyle = this.color;
+
+        this.beta += 0.01;
+        var diff = Math.sin(this.beta);
+
+        for (var i = 0; i < this.num; i++){
+            ctx.beginPath();
+            ctx.moveTo(this.startPoint[i], canvas.height);
+            this.endPointX[i] = this.startPoint[i] + diff * this.amp[i];
+            ctx.quadraticCurveTo(this.startPoint[i], canvas.height * 3 / 4, this.endPointX[i], this.endPointY[i]);
+            ctx.stroke();
+            ctx.closePath();
+        }
+        ctx.restore();
+    };
+
+    var oAqu = new Aqu('#3399ff', 80);
+    oAqu.init();
+
+    (function frame() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        oAqu.draw(context);
+        window.requestAnimationFrame(frame, canvas);
+    })();
+</script>
+</html>

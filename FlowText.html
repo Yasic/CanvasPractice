@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FlowText</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.background = 'black';
+    var context = canvas.getContext('2d');
+
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    var middleColor = 'rgba(0, 0, 0, .1)';
+    var words = "0123456789qwertyuiopasdfghjklzxcvbnm,./;'\[]QWERTYUIOP{}ASDFGHJHJKL:ZXCVBBNM<>?";
+    words = '01';
+    var wordColor = "#33ff33";
+    var wordArray = words.split('');
+
+    var fontSize = 16;
+    var clumn = width/fontSize;
+    var drop = [];
+    for (var i = 0; i < clumn; i++){
+        drop[i] = 0;
+    }
+
+    function drawText() {
+        context.save();
+        context.fillStyle = wordColor;
+        context.font = fontSize + "px arial";
+        for (var i = 0; i < clumn; i++){
+            var word = wordArray[parseInt(Math.random() * wordArray.length)];
+            context.fillText(word, i * fontSize, drop[i] * fontSize);
+            drop[i]++;
+            if (drop[i] * fontSize >= height && Math.random() > 0.98){
+                drop[i] = 0;
+            }
+        }
+        context.restore();
+    }
+
+    setInterval(function () {
+        context.fillStyle = middleColor;
+        context.fillRect(0, 0, width, height);
+        drawText();
+    }, 30)
+
+</script>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gravity Animation</title>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function Ball(radius) {
+        this.radius = radius;
+        this.speed = 5;
+        this.x = 0;
+        this.y = 0;
+    }
+
+    Ball.prototype.draw = function (context) {
+        context.save();
+        context.fillStyle = '#3399ff';
+        context.beginPath();
+        context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        context.fill();
+        context.closePath();
+        context.restore();
+    };
+
+    var ball = new Ball(10);
+    ball.x = canvas.width/2;
+    ball.y = canvas.height/2 - 100;
+
+    var vy = 0;
+    var gravity = 0.5;
+    var bounce = -0.8;
+
+    function checkGround(ball) {
+        if (ball.y + ball.radius > canvas.height){
+            ball.y = canvas.height - ball.radius;
+            vy *= bounce;
+        }
+    }
+
+    (function frame() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        vy += gravity;
+        ball.y += vy;
+        checkGround(ball);
+        ball.draw(context);
+        window.requestAnimationFrame(frame, canvas);
+    })()
+</script>
+</html>

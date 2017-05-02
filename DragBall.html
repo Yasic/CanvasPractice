@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drag Ball</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="js/utils.js"></script>
+    <script src="js/ball.js"></script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.background = 'black';
+
+    var mouse = utils.captureMouse(canvas);
+
+    var ball = new Ball(100, '#3399ff');
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+
+    ball.draw(context);
+
+    function checkMouse() {
+        if ((Math.pow(mouse.x - ball.x, 2) + Math.pow(mouse.y - ball.y, 2)) <= Math.pow(ball.radius, 2)) {
+            return true;
+        }
+        else return false;
+    }
+
+    var w = 0;
+    var h = 0;
+    canvas.addEventListener('mousedown', function (event) {
+        if (checkMouse()){
+            w = mouse.x - ball.x;
+            h = mouse.y - ball.y;
+            canvas.addEventListener('mouseup', onMouseUp, false);
+            canvas.addEventListener('mousemove', onMouseMove, false);
+        }
+    });
+
+    function onMouseUp(event) {
+        canvas.removeEventListener('mouseup', onMouseUp, false);
+        canvas.removeEventListener('mousemove', onMouseMove, false);
+    }
+
+    function onMouseMove(event) {
+        ball.x = mouse.x - w;
+        ball.y = mouse.y - h;
+    }
+
+    (function frame() {
+        window.requestAnimationFrame(frame, canvas);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        ball.draw(context);
+    })()
+</script>
+</html>

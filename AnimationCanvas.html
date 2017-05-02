@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var totalCivilizationSize = 1000;
+    var totalRecourseSize = 10000;
+    var updateLevel = 0.1;
+    var canvas = document.getElementById("canvas");
+    canvas.width = document.body.clientWidth;
+    canvas.height = document.body.scrollHeight;
+    canvas.style.background = 'black'
+    var ctx = canvas.getContext('2d');
+    var Civilization = function (name, redius, color) {
+        this.life = true;
+        this.name = name;
+        this.redius = redius;
+        this.backColor = color;
+        this.positionX = Math.random() * canvas.width;
+        this.positionY = Math.random() * canvas.height;
+        this.science = 4 * Math.random() + 1;
+        this.attackPoint = [];
+        return this;
+    }
+
+    var civs = [];
+    for (var i = 0; i < totalCivilizationSize; i++) {
+        civs[i] = new Civilization(i, 5, '#' + (function (h) {
+                    return new Array(7 - h.length).join("0") + h
+                })((Math.random() * 0x1000000 << 0).toString(16)))
+    }
+    var index = 1;
+
+    var resource = [];
+    for (i = 0; i < totalRecourseSize; i++) {
+        resource[i] = {
+            x: canvas.width * Math.random(),
+            y: canvas.height * Math.random()
+        }
+    }
+
+    var main = function () {
+        var randomX = 0;
+        var randomY = 0;
+        index++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        for (i = 0; i < civs.length; i++) {
+            if (civs[i].life) {
+                if (index % 10 === 0) {
+                    randomX = 3 * Math.random() - 1.5;
+                    randomY = 3 * Math.random() - 1.5;
+                }
+                ctx.fillStyle = civs[i].backColor;
+                ctx.strokeStyle = civs[i].backColor;
+                ctx.beginPath();
+                ctx.globalAlpha = 0.5;
+                ctx.arc(civs[i].positionX, civs[i].positionY, civs[i].redius, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                /*ctx.fillStyle = 'white';
+                ctx.fillText(parseInt(civs[i].science), civs[i].positionX, civs[i].positionY);*/
+                civs[i].redius += updateLevel * civs[i].science;
+
+
+                for (var ss = 0; ss < civs[i].attackPoint.length; ss++){
+                    ctx.strokeStyle = civs[i].backColor;
+                    ctx.fillStyle = civs[i].backColor;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(civs[i].attackPoint[ss].x1, civs[i].attackPoint[ss].y1);
+                    ctx.lineTo(civs[i].attackPoint[ss].x2, civs[i].attackPoint[ss].y2);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            }
+        }
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, 150, 100);
+        ctx.fillStyle = 'black';
+        ctx.fillText("生存文明个数：" + civs.length, 0, 50);
+
+        for (i = 0; i < civs.length; i++) {
+            for (var j = 0; j < civs.length; j++) {
+                console.log(i)
+                if (civs[j].name !== civs[i].name) {
+                    var distance = Math.pow(civs[j].positionX - civs[i].positionX, 2) + Math.pow(civs[j].positionY - civs[i].positionY, 2);
+                    if (distance < Math.pow(civs[i].redius + civs[j].redius, 2)) {
+                        if (civs[i].science > civs[j].science + 3) {
+                            civs[i].attackPoint[civs[i].attackPoint.length] = {
+                                x1: civs[i].positionX,
+                                y1: civs[i].positionY,
+                                x2: civs[j].positionX,
+                                y2: civs[j].positionY,
+                            };
+                            civs[i].science += civs[j].science * 0.1;
+                            civs.splice(j, 1);
+                        } else if (civs[i].science > civs[j].science && civs[i].science <= civs.science + 3){
+
+                        }
+                    }
+                }
+            }
+            for (var k = 0; k < resource.length; k++) {
+                if (Math.pow(resource[k].x - civs[i].positionX, 2) + Math.pow(resource[k].y - civs[i].positionY, 2) < Math.pow(civs[i].redius, 2)) {
+                    civs[i].science += 0.1;
+                    resource.splice(k, 1);
+                }
+            }
+        }
+
+        if (civs.length > 3){
+            requestAnimationFrame(main)
+        }
+        else {
+            var temp = 0;
+            for (var j = 0; j < civs.length; j++){
+                temp += civs[j].attackPoint.length;
+            }
+            average = average * killNumber + temp;
+            killNumber++;
+            average = average/killNumber;
+            console.log(average)
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            for (var i = 0; i < totalCivilizationSize; i++) {
+                civs[i] = new Civilization(i, 5, '#' + (function (h) {
+                            return new Array(7 - h.length).join("0") + h
+                        })((Math.random() * 0x1000000 << 0).toString(16)))
+            }
+        }
+    };
+
+    main()
+    var killNumber = 0;
+    var average = 0;
+    /*window.setInterval(function () {
+        if (civs.length > 3){
+            requestAnimationFrame(main)
+        }
+        else {
+            var temp = 0;
+            for (var j = 0; j < civs.length; j++){
+                temp += civs[j].attackPoint.length;
+            }
+            average = average * killNumber + temp;
+            killNumber++;
+            average = average/killNumber;
+            console.log(average)
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            for (var i = 0; i < totalCivilizationSize; i++) {
+                civs[i] = new Civilization(i, 5, '#' + (function (h) {
+                            return new Array(7 - h.length).join("0") + h
+                        })((Math.random() * 0x1000000 << 0).toString(16)))
+            }
+        }
+    }, 100)*/
+
+</script>
+</html>
